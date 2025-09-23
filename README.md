@@ -17,7 +17,10 @@ A full-stack notes management application built with React.js frontend, Node.js/
 notes_manager/
 ├── backend/          # Node.js/Express API server
 ├── frontend/         # React.js frontend application
-├── infrastructure/   # AWS CDK infrastructure (optional)
+├── infrastructure/   # AWS CDK infrastructure
+│   ├── lib/         # CDK stack definitions
+│   ├── bin/         # CDK app entry point
+│   └── scripts/     # Deployment scripts
 └── README.md
 ```
 
@@ -121,12 +124,12 @@ npm run build        # Build for production
 npm run preview      # Preview production build
 ```
 
-## 🚀 Deployment with AWS CDK (Optional)
+## 🚀 Deployment with AWS CDK
 
 ### Prerequisites for CDK Deployment
-- AWS CLI configured
+- AWS CLI configured with appropriate permissions
 - AWS CDK installed (`npm install -g aws-cdk`)
-- Docker (for containerized deployment)
+- Docker (for ECS container deployment)
 
 ### 1. Install CDK Dependencies
 ```bash
@@ -141,18 +144,49 @@ cdk bootstrap
 
 ### 3. Deploy Infrastructure
 ```bash
-cdk deploy --all
+# Deploy all stacks
+npm run deploy
+
+# Or use the deployment script
+./scripts/deploy.sh
 ```
 
-### 4. Access Deployed Application
-After deployment, CDK will output:
-- **API URL**: Your backend API endpoint
-- **Frontend URL**: Your S3-hosted frontend URL
-
-### 5. Clean Up (Optional)
+### 4. Deploy Frontend to S3
 ```bash
-cdk destroy --all
+# Build the frontend
+cd ../frontend
+npm run build
+
+# Upload to S3 (replace BUCKET_NAME with actual bucket from outputs)
+aws s3 sync dist s3://BUCKET_NAME --delete
 ```
+
+### 5. Access Deployed Application
+After deployment, you'll get:
+- **Backend API URL**: ECS Fargate service behind Application Load Balancer
+- **Frontend URL**: CloudFront distribution URL
+- **S3 Bucket**: For manual frontend uploads
+
+### 6. Clean Up (Optional)
+```bash
+npm run destroy
+```
+
+## 🏗️ Infrastructure Architecture
+
+### Backend Stack
+- **ECS Fargate** service with auto-scaling
+- **Application Load Balancer** for high availability
+- **VPC** with public/private subnets
+- **CloudWatch Logs** for monitoring
+- **Health checks** and auto-recovery
+
+### Frontend Stack
+- **S3 Bucket** for static website hosting
+- **CloudFront Distribution** with global CDN
+- **Origin Access Control** for security
+- **SPA routing** support with custom error pages
+- **Compression** and caching optimization
 
 ## 📁 Project Structure
 
