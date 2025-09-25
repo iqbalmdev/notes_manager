@@ -3,7 +3,7 @@ import type { Note, CreateNoteRequest } from '../types';
 import config from '../config/env';
 
 // Get configuration from environment
-const { apiBaseUrl, appName, nodeEnv, enableLogging } = config;
+const { apiBaseUrl, nodeEnv, enableLogging } = config;
 
 const api = axios.create({
   baseURL: apiBaseUrl,
