@@ -7,9 +7,12 @@
     "watch": "tsc -w",
     "cdk": "cdk",
     "deploy": "cdk deploy --all",
+    "deploy:frontend": "cdk deploy NotesManagerFrontend",
     "destroy": "cdk destroy --all",
+    "destroy:frontend": "cdk destroy NotesManagerFrontend",
     "synth": "cdk synth",
     "diff": "cdk diff",
+    "bootstrap": "cdk bootstrap",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -17,24 +17,16 @@ export class NotesManagerFrontendStack extends cdk.Stack {
       bucketName: `notes-manager-frontend-${this.account}-${this.region}`,
       websiteIndexDocument: 'index.html',
       websiteErrorDocument: 'index.html', // SPA routing
-      publicReadAccess: false,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      publicReadAccess: true, // Enable public read for website hosting
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-    });
-
-    // CloudFront Origin Access Control
-    const originAccessControl = new cloudfront.OriginAccessControl(this, 'NotesManagerOAC', {
-      originAccessControlName: 'NotesManagerOAC',
-      description: 'OAC for Notes Manager Frontend',
     });
 
     // CloudFront Distribution
     const distribution = new cloudfront.Distribution(this, 'NotesManagerDistribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(bucket, {
-          originAccessControl,
-        }),
+        origin: new origins.S3StaticWebsiteOrigin(bucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
@@ -57,20 +49,7 @@ export class NotesManagerFrontendStack extends cdk.Stack {
       comment: 'Notes Manager Frontend Distribution',
     });
 
-    // Grant CloudFront access to the S3 bucket
-    bucket.addToResourcePolicy(
-      new cdk.aws_iam.PolicyStatement({
-        effect: cdk.aws_iam.Effect.ALLOW,
-        principals: [new cdk.aws_iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions: ['s3:GetObject'],
-        resources: [bucket.arnForObjects('*')],
-        conditions: {
-          StringEquals: {
-            'AWS:SourceArn': `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`,
-          },
-        },
-      })
-    );
+    // No IAM policy needed since we're using public read access
 
     // Store the frontend URL and bucket name for output
     this.frontendUrl = `https://${distribution.distributionDomainName}`;

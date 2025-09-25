@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: notes-manager-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        value: https://d2ozkl6n5yflvt.cloudfront.net
+      - key: LOG_LEVEL
+        value: info
+      - key: HEALTH_CHECK_PATH
+        value: /api/health

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreateNoteRequest } from '../types';
+import type { CreateNoteRequest } from '../types';
 
 interface NoteFormProps {
   onSubmit: (note: CreateNoteRequest) => void;

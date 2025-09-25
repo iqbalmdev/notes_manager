@@ -1,14 +1,45 @@
 import axios from 'axios';
-import { Note, CreateNoteRequest } from '../types';
+import type { Note, CreateNoteRequest } from '../types';
+import config from '../config/env';
 
-const API_BASE_URL = 'http://localhost:3001';
+// Get configuration from environment
+const { apiBaseUrl, appName, nodeEnv, enableLogging } = config;
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
+
+// Request interceptor for logging
+api.interceptors.request.use(
+  (requestConfig) => {
+    if (nodeEnv === 'development' && enableLogging) {
+      console.log(`📤 API Request: ${requestConfig.method?.toUpperCase()} ${requestConfig.url}`);
+    }
+    return requestConfig;
+  },
+  (error) => {
+    console.error('❌ API Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for logging
+api.interceptors.response.use(
+  (response) => {
+    if (nodeEnv === 'development' && enableLogging) {
+      console.log(`📥 API Response: ${response.status} ${response.config.url}`);
+    }
+    return response;
+  },
+  (error) => {
+    console.error('❌ API Response Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
 
 export const notesApi = {
   // Get all notes

@@ -1,14 +1,16 @@
 import React from 'react';
-import { Note } from '../types';
+import type { Note, CreateNoteRequest } from '../types';
 import NoteItem from './NoteItem';
 
 interface NotesListProps {
   notes: Note[];
   onDeleteNote: (id: string) => void;
+  onUpdateNote: (id: string, data: Partial<CreateNoteRequest>) => void;
   deletingNoteId?: string;
+  updatingNoteId?: string;
 }
 
-const NotesList: React.FC<NotesListProps> = ({ notes, onDeleteNote, deletingNoteId }) => {
+const NotesList: React.FC<NotesListProps> = ({ notes, onDeleteNote, onUpdateNote, deletingNoteId, updatingNoteId }) => {
   if (notes.length === 0) {
     return (
       <div className="empty-state">
@@ -27,7 +29,9 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onDeleteNote, deletingNote
             key={note.id}
             note={note}
             onDelete={onDeleteNote}
+            onUpdate={onUpdateNote}
             isDeleting={deletingNoteId === note.id}
+            isUpdating={updatingNoteId === note.id}
           />
         ))}
       </div>
