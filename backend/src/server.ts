@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import app from './app';
 
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 app.listen(PORT, () => {
