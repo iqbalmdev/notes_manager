@@ -1,291 +1,390 @@
-# 📝 Notes Manager
+# 📝 Notes Manager - Full Stack Application
 
-A full-stack notes management application built with React.js frontend, Node.js/Express backend, and optional AWS CDK infrastructure.
+A modern, full-stack notes management application built with React, Node.js, and deployed on AWS with CloudFront and Render.
 
-## 🚀 Features
+## 🌟 Features
 
-- **Create Notes**: Add new notes with title and content
-- **View Notes**: List all notes with creation/update timestamps
-- **Delete Notes**: Remove notes with confirmation
-- **Real-time Validation**: Client-side and server-side validation
-- **Responsive Design**: Works on desktop and mobile devices
-- **Error Handling**: Comprehensive error handling and user feedback
+- **Frontend**: React + TypeScript + Vite
+- **Backend**: Node.js + Express + TypeScript
+- **Database**: In-memory storage (easily extensible to PostgreSQL/MongoDB)
+- **Deployment**: AWS S3 + CloudFront (Frontend) + Render (Backend)
+- **Infrastructure**: AWS CDK for infrastructure as code
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
 ```
 notes_manager/
-├── backend/          # Node.js/Express API server
-├── frontend/         # React.js frontend application
-├── infrastructure/   # AWS CDK infrastructure
-│   ├── lib/         # CDK stack definitions
-│   ├── bin/         # CDK app entry point
-│   └── scripts/     # Deployment scripts
-└── README.md
+├── frontend/                 # React frontend application
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/          # Application pages
+│   │   ├── api/            # API client
+│   │   └── config/         # Environment configuration
+│   └── dist/               # Production build output
+├── backend/                 # Node.js backend API
+│   ├── src/
+│   │   ├── controllers/    # API controllers
+│   │   ├── services/       # Business logic
+│   │   └── types/          # TypeScript types
+│   └── dist/               # Compiled JavaScript
+└── infrastructure/          # AWS CDK infrastructure
+    ├── lib/                # CDK stack definitions
+    └── scripts/            # Deployment scripts
 ```
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Node.js** with **Express.js**
-- **TypeScript** for type safety
-- **Zod** for validation
-- **CORS** for cross-origin requests
-- **In-memory storage** (Map-based, resets on restart)
-
-### Frontend
-- **React 18** with **TypeScript**
-- **Vite** for fast development and building
-- **Axios** for API communication
-- **CSS3** with modern styling
-
-### Infrastructure (Optional)
-- **AWS CDK** with TypeScript
-- **ECS Fargate** for backend deployment
-- **S3** for frontend hosting
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-- Git
 
-### 1. Clone the Repository
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **AWS CLI** (for deployment)
+- **AWS CDK** (for infrastructure)
+
+### Installation
+
 ```bash
+# Clone the repository
 git clone https://github.com/iqbalmdev/notes_manager.git
 cd notes_manager
-```
 
-### 2. Backend Setup
-```bash
+# Install backend dependencies
 cd backend
 npm install
-npm run dev
-```
-The backend will start on `http://localhost:3001`
 
-### 3. Frontend Setup
-```bash
-cd frontend
+# Install frontend dependencies
+cd ../frontend
 npm install
-npm run dev
-```
-The frontend will start on `http://localhost:5173`
 
-### 4. Access the Application
-Open your browser and navigate to `http://localhost:5173`
-
-## 📡 API Endpoints
-
-### Base URL: `http://localhost:3001`
-
-| Method | Endpoint | Description | Request Body | Response |
-|--------|----------|-------------|-------------|----------|
-| `GET` | `/health` | Health check | - | `{ status: "OK", timestamp: "..." }` |
-| `POST` | `/notes` | Create a new note | `{ title: string, content: string }` | `Note` object |
-| `GET` | `/notes` | Get all notes | - | Array of `Note` objects |
-| `GET` | `/notes/:id` | Get note by ID | - | `Note` object or 404 |
-| `PUT` | `/notes/:id` | Update a note | `{ title?: string, content?: string }` | Updated `Note` object |
-| `DELETE` | `/notes/:id` | Delete a note | - | 204 No Content |
-
-### Data Models
-
-#### Note Object
-```typescript
-interface Note {
-  id: string;           // Auto-generated unique ID
-  title: string;        // Note title (max 100 chars)
-  content: string;      // Note content
-  createdAt: string;    // ISO timestamp
-  updatedAt: string;    // ISO timestamp
-}
+# Install infrastructure dependencies
+cd ../infrastructure
+npm install
 ```
 
-#### Validation Rules
-- **Title**: Required, 1-100 characters
-- **Content**: Required, minimum 1 character
-
-## 🏃‍♂️ Development
+## 🛠️ Local Development
 
 ### Backend Development
+
 ```bash
+# Navigate to backend directory
 cd backend
-npm run dev          # Start development server with hot reload
-npm run build        # Build for production
-npm start            # Start production server
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# The backend will be available at http://localhost:3001
 ```
+
+**Backend Endpoints:**
+- `GET /api/health` - Health check
+- `GET /api/notes` - Get all notes
+- `POST /api/notes` - Create a note
+- `GET /api/notes/:id` - Get note by ID
+- `PUT /api/notes/:id` - Update note
+- `DELETE /api/notes/:id` - Delete note
 
 ### Frontend Development
+
 ```bash
+# Navigate to frontend directory
 cd frontend
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-```
 
-## 🚀 Deployment with AWS CDK
-
-### Prerequisites for CDK Deployment
-- AWS CLI configured with appropriate permissions
-- AWS CDK installed (`npm install -g aws-cdk`)
-- Docker (for ECS container deployment)
-
-### 1. Install CDK Dependencies
-```bash
-cd infrastructure
+# Install dependencies
 npm install
+
+# Start development server
+npm run dev
+
+# The frontend will be available at http://localhost:5173
 ```
-
-### 2. Bootstrap CDK (First time only)
-```bash
-cdk bootstrap
-```
-
-### 3. Deploy Infrastructure
-```bash
-# Deploy all stacks
-npm run deploy
-
-# Or use the deployment script
-./scripts/deploy.sh
-```
-
-### 4. Deploy Frontend to S3
-```bash
-# Build the frontend
-cd ../frontend
-npm run build
-
-# Upload to S3 (replace BUCKET_NAME with actual bucket from outputs)
-aws s3 sync dist s3://BUCKET_NAME --delete
-```
-
-### 5. Access Deployed Application
-After deployment, you'll get:
-- **Backend API URL**: ECS Fargate service behind Application Load Balancer
-- **Frontend URL**: CloudFront distribution URL
-- **S3 Bucket**: For manual frontend uploads
-
-### 6. Clean Up (Optional)
-```bash
-npm run destroy
-```
-
-## 🏗️ Infrastructure Architecture
-
-### Backend Stack
-- **ECS Fargate** service with auto-scaling
-- **Application Load Balancer** for high availability
-- **VPC** with public/private subnets
-- **CloudWatch Logs** for monitoring
-- **Health checks** and auto-recovery
-
-### Frontend Stack
-- **S3 Bucket** for static website hosting
-- **CloudFront Distribution** with global CDN
-- **Origin Access Control** for security
-- **SPA routing** support with custom error pages
-- **Compression** and caching optimization
-
-## 📁 Project Structure
-
-### Backend Structure
-```
-backend/
-├── src/
-│   ├── app.ts              # Express app configuration
-│   ├── server.ts           # Server startup
-│   ├── types.ts            # TypeScript interfaces
-│   ├── validation.ts       # Zod validation schemas
-│   ├── notesService.ts     # Business logic
-│   └── notesController.ts   # API route handlers
-├── package.json
-└── tsconfig.json
-```
-
-### Frontend Structure
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── NoteForm.tsx     # Add note form
-│   │   ├── NoteItem.tsx     # Individual note display
-│   │   └── NotesList.tsx    # Notes list container
-│   ├── api/
-│   │   └── notesApi.ts      # API client functions
-│   ├── types.ts             # TypeScript interfaces
-│   ├── App.tsx              # Main application component
-│   └── App.css              # Application styles
-├── package.json
-└── vite.config.ts
-```
-
-## 🧪 Testing
-
-### Backend Testing
-```bash
-cd backend
-npm test                    # Run backend tests
-```
-
-### Frontend Testing
-```bash
-cd frontend
-npm test                    # Run frontend tests
-npm run test:coverage      # Run tests with coverage
-```
-
-## 🔧 Configuration
 
 ### Environment Variables
 
-#### Backend
-- `PORT`: Server port (default: 3001)
-- `NODE_ENV`: Environment (development/production)
+#### Backend (.env)
+```bash
+# Server Configuration
+PORT=3001
+NODE_ENV=development
 
-#### Frontend
-- `VITE_API_URL`: Backend API URL (default: http://localhost:3001)
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5173
 
-## 🐛 Troubleshooting
+# Logging Configuration
+LOG_LEVEL=info
+HEALTH_CHECK_PATH=/api/health
+```
+
+#### Frontend (.env.local)
+```bash
+# API Configuration
+VITE_API_BASE_URL=http://localhost:3001
+
+# App Configuration
+VITE_APP_NAME=Notes Manager
+VITE_NODE_ENV=development
+
+# Features
+VITE_ENABLE_LOGGING=true
+VITE_ENABLE_ANALYTICS=false
+```
+
+## 🚀 Deployment
+
+### Backend Deployment (Render)
+
+#### 1. Prepare Backend for Production
+
+```bash
+cd backend
+
+# Build the application
+npm run build
+
+# Test production build locally
+npm run start:prod
+```
+
+#### 2. Deploy to Render
+
+1. **Connect Repository:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository
+
+2. **Configure Service:**
+   ```
+   Name: notes-manager-backend
+   Environment: Node
+   Region: Oregon (or your preference)
+   Branch: main
+   Root Directory: notes_manager/backend
+   ```
+
+3. **Build & Deploy Settings:**
+   ```
+   Build Command: npm install && npm run build
+   Start Command: npm run start:prod
+   ```
+
+4. **Environment Variables:**
+   ```
+   NODE_ENV=production
+   PORT=10000
+   CORS_ORIGIN=https://d2ozkl6n5yflvt.cloudfront.net
+   LOG_LEVEL=info
+   HEALTH_CHECK_PATH=/api/health
+   ```
+
+### Frontend Deployment (AWS S3 + CloudFront)
+
+#### 1. Deploy Infrastructure
+
+```bash
+cd infrastructure
+
+# Install AWS CDK globally (if not already installed)
+npm install -g aws-cdk
+
+# Bootstrap CDK (first time only)
+cdk bootstrap
+
+# Deploy frontend infrastructure
+cdk deploy NotesManagerFrontend
+```
+
+#### 2. Build and Deploy Frontend
+
+```bash
+cd frontend
+
+# Build for production
+npm run build
+
+# Deploy to S3
+aws s3 sync dist s3://notes-manager-frontend-677020945452-ap-south-1 --delete
+
+# Invalidate CloudFront cache
+aws cloudfront create-invalidation --distribution-id E1CJLXTY4W3HUT --paths "/*"
+```
+
+#### 3. Update Frontend Environment
+
+```bash
+# Update .env.production with your backend URL
+VITE_API_BASE_URL=https://notes-manager-smw4.onrender.com
+VITE_NODE_ENV=production
+VITE_ENABLE_LOGGING=false
+```
+
+## 🔄 Complete Deployment Workflow
+
+### 1. Deploy Backend to Render
+
+```bash
+# Build backend
+cd backend
+npm run build
+
+# Push to repository (Render will auto-deploy)
+git add .
+git commit -m "Deploy backend to Render"
+git push origin main
+```
+
+### 2. Deploy Frontend to AWS
+
+```bash
+# Deploy infrastructure
+cd infrastructure
+cdk deploy NotesManagerFrontend
+
+# Build and deploy frontend
+cd ../frontend
+npm run build
+aws s3 sync dist s3://notes-manager-frontend-677020945452-ap-south-1 --delete
+aws cloudfront create-invalidation --distribution-id E1CJLXTY4W3HUT --paths "/*"
+```
+
+### 3. Update Environment Variables
+
+```bash
+# Update frontend environment
+cd frontend
+echo "VITE_API_BASE_URL=https://your-backend-url.onrender.com" > .env.production
+
+# Rebuild and redeploy
+npm run build
+aws s3 sync dist s3://notes-manager-frontend-677020945452-ap-south-1 --delete
+```
+
+## 📊 Production URLs
+
+- **Frontend**: https://d2ozkl6n5yflvt.cloudfront.net
+- **Backend**: https://notes-manager-smw4.onrender.com
+- **Backend Health**: https://notes-manager-smw4.onrender.com/api/health
+
+## 🛠️ Development Commands
+
+### Backend Commands
+
+```bash
+# Development
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start:prod      # Start production server
+
+# Testing
+npm test                # Run tests
+npm run test:watch      # Run tests in watch mode
+```
+
+### Frontend Commands
+
+```bash
+# Development
+npm run dev             # Start development server
+npm run build           # Build for production
+npm run preview         # Preview production build
+
+# Linting
+npm run lint            # Run ESLint
+npm run lint:fix        # Fix ESLint errors
+```
+
+### Infrastructure Commands
+
+```bash
+# CDK Commands
+cdk deploy              # Deploy all stacks
+cdk deploy NotesManagerFrontend  # Deploy frontend only
+cdk destroy             # Destroy all resources
+cdk synth               # Synthesize CloudFormation templates
+cdk diff                # Show differences
+```
+
+## 🔧 Troubleshooting
 
 ### Common Issues
 
-1. **Backend not starting**
-   - Check if port 3001 is available
-   - Ensure all dependencies are installed
-   - Check TypeScript compilation errors
+#### Backend Issues
+```bash
+# Port already in use
+lsof -ti:3001 | xargs kill -9
 
-2. **Frontend can't connect to backend**
-   - Verify backend is running on port 3001
-   - Check CORS configuration
-   - Ensure API URL is correct
+# Build errors
+rm -rf node_modules dist
+npm install
+npm run build
+```
 
-3. **CDK deployment fails**
-   - Verify AWS credentials are configured
-   - Check CDK bootstrap status
-   - Ensure Docker is running (for containerized deployment)
+#### Frontend Issues
+```bash
+# Build fails
+rm -rf node_modules dist
+npm install
+npm run build
+
+# Environment variables not working
+# Ensure variables start with VITE_
+# Check .env files are in correct location
+```
+
+#### Deployment Issues
+```bash
+# AWS credentials
+aws configure
+aws sts get-caller-identity
+
+# CDK bootstrap
+cdk bootstrap
+
+# S3 sync issues
+aws s3 ls s3://your-bucket-name
+aws s3 sync dist s3://your-bucket-name --delete --force
+```
+
+### Useful Commands
+
+```bash
+# Check AWS identity
+aws sts get-caller-identity
+
+# List S3 buckets
+aws s3 ls
+
+# Check CloudFront distributions
+aws cloudfront list-distributions
+
+# View CDK stacks
+cdk list
+
+# Check application logs (Render)
+# Go to Render dashboard → Logs tab
+```
+
+## 📚 Additional Resources
+
+- [React Documentation](https://reactjs.org/docs)
+- [Vite Documentation](https://vitejs.dev/guide)
+- [Express.js Documentation](https://expressjs.com/)
+- [AWS CDK Documentation](https://docs.aws.amazon.com/cdk/)
+- [Render Documentation](https://render.com/docs)
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test locally
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 👨‍💻 Author
+---
 
-**Iqbal Mdev**
-- GitHub: [@iqbalmdev](https://github.com/iqbalmdev)
-
-## 🙏 Acknowledgments
-
-- React team for the amazing framework
-- Express.js for the robust backend framework
-- AWS CDK for infrastructure as code
-- Vite for the lightning-fast build tool
+**🎉 Your Notes Manager application is now ready for development and deployment!**
